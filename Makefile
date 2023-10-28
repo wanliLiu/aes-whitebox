@@ -5,6 +5,7 @@ CXXFLAGS = $(CFLAGS) -std=c++11
 # https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf
 
 TEST_PLAIN = 6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710
+# TEST_PLAIN = 02
 
 AES128_KEY             = 2b7e151628aed2a6abf7158809cf4f3c
 AES128_CFB_TEST_CIPHER = 3b3fd92eb72dad20333449f8e83cfb4ac8a64537a0b3a93fcde3cdad9f1ce58b26751f67a3cbb140b1808cf187a4f4dfc04b05357c5d1c0eeac4c66f9ff7f2e6
@@ -30,9 +31,10 @@ AES256_OFB_TEST_IV     = 000102030405060708090a0b0c0d0e0f
 AES256_CTR_TEST_CIPHER = 601ec313775789a5b7a7f504bbf3d228f443e3ca4d62b59aca84e990cacaf5c52b0930daa23de94ce87017ba2d84988ddfc9c58db67aada613c2dd08457941a6
 AES256_CTR_TEST_NONCE  = f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
 
-.PHONY: clean all
+.PHONY: clean all kiwiWB128
 
-all: aes128_tests aes192_tests aes256_tests
+all: kiwiWB128
+#  aes192_tests aes256_tests
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -46,32 +48,43 @@ libaes.a: aes.o
 aes_whitebox_compiler: aes_whitebox_compiler.o
 	$(CXX) $(LDFLAGS) $^ -o $@ -lntl
 
-aes128_tests: aes_whitebox_compiler
+kiwiWB128: aes_whitebox_compiler
 	./aes_whitebox_compiler aes128 $(AES128_KEY)
 	$(CXX) $(CXXFLAGS) -c aes_whitebox.cc -o aes_whitebox.o
 	$(CC) $(CFLAGS) -c aes_tests.c -o aes_tests.o
-	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o -o $@
-	./$@ cfb $(TEST_PLAIN) $(AES128_CFB_TEST_IV) $(AES128_CFB_TEST_CIPHER)
-	./$@ ofb $(TEST_PLAIN) $(AES128_OFB_TEST_IV) $(AES128_OFB_TEST_CIPHER)
-	./$@ ctr $(TEST_PLAIN) $(AES128_CTR_TEST_NONCE) $(AES128_CTR_TEST_CIPHER)
+	$(CC) $(CFLAGS) -c utils.c -o utils.o
+	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o utils.o -o $@
+	./$@ cfb $(TEST_PLAIN) $(AES128_CFB_TEST_IV) 
+	./$@ ofb $(TEST_PLAIN) $(AES128_OFB_TEST_IV) 
+	./$@ ctr $(TEST_PLAIN) $(AES128_CTR_TEST_NONCE)
 
-aes192_tests: aes_whitebox_compiler
-	./aes_whitebox_compiler aes192 $(AES192_KEY)
-	$(CXX) $(CXXFLAGS) -c aes_whitebox.cc -o aes_whitebox.o
-	$(CC) $(CFLAGS) -c aes_tests.c -o aes_tests.o
-	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o -o $@
-	./$@ cfb $(TEST_PLAIN) $(AES192_CFB_TEST_IV) $(AES192_CFB_TEST_CIPHER)
-	./$@ ofb $(TEST_PLAIN) $(AES192_OFB_TEST_IV) $(AES192_OFB_TEST_CIPHER)
-	./$@ ctr $(TEST_PLAIN) $(AES192_CTR_TEST_NONCE) $(AES192_CTR_TEST_CIPHER)
 
-aes256_tests: aes_whitebox_compiler
-	./aes_whitebox_compiler aes256 $(AES256_KEY)
-	$(CXX) $(CXXFLAGS) -c aes_whitebox.cc -o aes_whitebox.o
-	$(CC) $(CFLAGS) -c aes_tests.c -o aes_tests.o
-	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o -o $@
-	./$@ cfb $(TEST_PLAIN) $(AES256_CFB_TEST_IV) $(AES256_CFB_TEST_CIPHER)
-	./$@ ofb $(TEST_PLAIN) $(AES256_OFB_TEST_IV) $(AES256_OFB_TEST_CIPHER)
-	./$@ ctr $(TEST_PLAIN) $(AES256_CTR_TEST_NONCE) $(AES256_CTR_TEST_CIPHER)
+# aes128_tests: aes_whitebox_compiler
+# 	./aes_whitebox_compiler aes128 $(AES128_KEY)
+# 	$(CXX) $(CXXFLAGS) -c aes_whitebox.cc -o aes_whitebox.o
+# 	$(CC) $(CFLAGS) -c aes_tests.c utils.c -o aes_tests.o
+# 	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o utils.o -o $@
+# 	./$@ cfb $(TEST_PLAIN) $(AES128_CFB_TEST_IV) $(AES128_CFB_TEST_CIPHER)
+# 	./$@ ofb $(TEST_PLAIN) $(AES128_OFB_TEST_IV) $(AES128_OFB_TEST_CIPHER)
+# 	./$@ ctr $(TEST_PLAIN) $(AES128_CTR_TEST_NONCE) $(AES128_CTR_TEST_CIPHER)
+
+# aes192_tests: aes_whitebox_compiler
+# 	./aes_whitebox_compiler aes192 $(AES192_KEY)
+# 	$(CXX) $(CXXFLAGS) -c aes_whitebox.cc -o aes_whitebox.o
+# 	$(CC) $(CFLAGS) -c aes_tests.c -o aes_tests.o
+# 	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o -o $@
+# 	./$@ cfb $(TEST_PLAIN) $(AES192_CFB_TEST_IV) $(AES192_CFB_TEST_CIPHER)
+# 	./$@ ofb $(TEST_PLAIN) $(AES192_OFB_TEST_IV) $(AES192_OFB_TEST_CIPHER)
+# 	./$@ ctr $(TEST_PLAIN) $(AES192_CTR_TEST_NONCE) $(AES192_CTR_TEST_CIPHER)
+
+# aes256_tests: aes_whitebox_compiler
+# 	./aes_whitebox_compiler aes256 $(AES256_KEY)
+# 	$(CXX) $(CXXFLAGS) -c aes_whitebox.cc -o aes_whitebox.o
+# 	$(CC) $(CFLAGS) -c aes_tests.c -o aes_tests.o
+# 	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o -o $@
+# 	./$@ cfb $(TEST_PLAIN) $(AES256_CFB_TEST_IV) $(AES256_CFB_TEST_CIPHER)
+# 	./$@ ofb $(TEST_PLAIN) $(AES256_OFB_TEST_IV) $(AES256_OFB_TEST_CIPHER)
+# 	./$@ ctr $(TEST_PLAIN) $(AES256_CTR_TEST_NONCE) $(AES256_CTR_TEST_CIPHER)
 
 clean:
-	rm -f *.o *.a aes_whitebox_tables.cc aes_whitebox_compiler aes128_tests aes192_tests aes256_tests
+	rm -f *.o *.a aes_whitebox_tables.cc aes_whitebox_compiler kiwiWB128

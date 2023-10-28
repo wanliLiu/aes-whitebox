@@ -11,6 +11,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 void aes_whitebox_encrypt_cfb(const uint8_t iv[16], const uint8_t* m,
     size_t len, uint8_t* c);

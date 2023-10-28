@@ -101,8 +101,11 @@ void Cipher(uint8_t in[16]) {
   ShiftRows(in);
 
   // Using T-boxes:
-  for (int i = 0; i < 16; i++)
+  printf("\n");
+  for (int i = 0; i < 16; i++){
     in[i] = TboxesLast[i][in[i]];
+    printf("%.2x", in[i]);
+  }
 }
 
 }  // namespace

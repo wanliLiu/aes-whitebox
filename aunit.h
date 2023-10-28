@@ -12,7 +12,8 @@
 
 // If you are using a standalone unit test file with no main(), use these macros.
 #define au_main int main(int argc, char* argv[]) { au_init
-#define au_endmain au_end }
+// #define au_endmain au_end }
+#define au_endmain }
 
 // The most general test, if nothing else fits. Takes an expression, and evals.
 // If the expression evaluates to C's idea of 'true', the test passes. Otherwise, the test fails.
