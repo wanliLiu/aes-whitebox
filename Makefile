@@ -33,7 +33,7 @@ AES256_CTR_TEST_NONCE  = f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
 
 .PHONY: clean all kiwiWB128
 
-all: kiwiWB128
+all: clean kiwiWB128
 #  aes192_tests aes256_tests
 
 %.o: %.c
