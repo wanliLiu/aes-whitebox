@@ -91,14 +91,18 @@ au_main
     err_quit("输入要加密的十六进制字符串的个数必须是偶数，当前输入的字符个数是：%d", inputLen);
   }
 
+  if (strlen(argv[3]) % 32 != 0) {
+      err_quit("输入的IV必须是16个十六进制数据");
+  }
+
   int inputByte = inputLen / 2;
   uint8_t plain[inputByte], iv_or_nonce[16], output[inputByte];
 
-  read_hex(argv[2], plain, inputByte, "input-plain");
+  read_hex(argv[2], plain, inputByte, "plain");
   read_hex(argv[3], iv_or_nonce, 16, "iv-or-nonce");
   
-  printf("--> 输入的字符串长度：%d 十六进制个数 %d\n", inputLen, inputByte);
-  printf("--> 开始加密:\n");
+  printf("--> 输入的十六进制字符串长度：%d 十六进制个数 %d\n", inputLen, inputByte);
+  printf("--> 开始%s加密:\n", argv[1]);
   for(int index = 0; index < inputByte; index++)
     printf("%.2x", plain[index]);
   printf("\n");
@@ -107,12 +111,12 @@ au_main
   (*encrypt)(iv_or_nonce, plain, inputByte, output);
   uint64_t timeEnd = getTime();
   printf("\n--> 中间值 end %lldus cost %lldus", timeEnd , timeEnd - timeStart);
-  printf("\n--> 加密后的密文：");
+  printf("\n--> 加密后的密文：\n");
   for(int index = 0; index < inputByte; index++)
       printf("%.2x", output[index]);
   printf("\n\n\n");
 
-  printf("--> 开始解密：\n");
+  printf("--> 开始%s解密：\n", argv[1]);
   for(int index = 0; index < inputByte; index++)
       printf("%.2x", output[index]);
   printf("\n");

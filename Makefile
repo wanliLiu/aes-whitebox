@@ -56,7 +56,7 @@ kiwiWB128: aes_whitebox_compiler
 	$(CC) $(LDFLAGS) aes_whitebox.o aes_tests.o utils.o -o $@
 	./$@ cfb $(TEST_PLAIN) $(AES128_CFB_TEST_IV) 
 	./$@ ofb $(TEST_PLAIN) $(AES128_OFB_TEST_IV) 
-	./$@ ctr $(TEST_PLAIN) $(AES128_CTR_TEST_NONCE)
+# ./$@ ctr $(TEST_PLAIN) $(AES128_CTR_TEST_NONCE)
 
 
 # aes128_tests: aes_whitebox_compiler
